@@ -1,57 +1,59 @@
 import logger from "@/config/logger";
 import { createPayment, getPaymentHistory, verifyPayment } from "@/services/payment.service";
-import { CreatePaymentRequest, PaymentVerificationParams } from "@/types/payment";
-import { Request, Response, NextFunction } from "express"
+import { CreatePaymentRequest, PaymentVerificationParams,  } from "@/types/payment";
+import { RequestHandler } from "express"
 
-export const createPackagePayment = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const createPackagePayment: RequestHandler<
+    {},
+    any,
+    CreatePaymentRequest
+> = async (req, res, next): Promise<void> => {
     try {
-        const paymentData: CreatePaymentRequest = req.body;
+        const paymentData = req.body;
 
         if (!paymentData.userId || !paymentData.planTitle || !paymentData.duration) {
-            return res.status(400).json({
-              success: false,
-              error: 'Missing required payment parameters'
+            res.status(400).json({
+                success: false,
+                error: 'Missing required payment parameters'
             });
+            return;
         }
 
         const result = await createPayment(paymentData);
-        return res.status(200).json(result);
+        res.status(200).json(result);
+        return;
     } catch (error) {
-        logger.error(`Error occured while payment initialisation ${error}`);
+        logger.error(`Error occurred while payment initialization ${error}`);
         next(error);
     }
-}
+};
 
-export const paymentVerifications = async(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const paymentVerifications: RequestHandler<
+    {},
+    any,
+    PaymentVerificationParams
+> = async (req, res, next): Promise<void> => {
     try {
-        const verificationData: PaymentVerificationParams = req.body;
-        const result = await verifyPayment(verificationData)
-        return res.status(200).json(result);
+        const verificationData = req.body;
+        const result = await verifyPayment(verificationData);
+        res.status(200).json(result);
+        return;
     } catch (error) {
-        logger.error(`Error occured while payment gateway integration ${error}`);
+        logger.error(`Error occurred while payment gateway integration ${error}`);
         next(error);
     }
-}
+};
 
-export const userPaymentHistory = async (
-    req: Request, 
-    res: Response,
-    next: NextFunction
-) => {
+export const userPaymentHistory: RequestHandler<
+    { userId: string }
+> = async (req, res, next): Promise<void> => {
     try {
-      const userId = req.params.userId;
-      const result = await getPaymentHistory(userId);
-      return res.status(200).json(result);
-    } catch (error: any) {
-        logger.error('Error occured while fetching payment history:', error);
+        const userId = req.params.userId;
+        const result = await getPaymentHistory(userId);
+        res.status(200).json(result);
+        return;
+    } catch (error) {
+        logger.error('Error occurred while fetching payment history:', error);
         next(error);
     }
-  };
+};

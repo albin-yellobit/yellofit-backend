@@ -1,4 +1,4 @@
-import { Plan } from "../types/pricing";
+import { Plan } from "@/types/payment";
 
 export const plans: Plan[] = [
     {

@@ -7,3 +7,5 @@ const authRouter = Router();
 authRouter.post('/send-otp', validatePhone, sendOTP);
 authRouter.post('/verify-otp', validateOTP, verifyOTP);
 authRouter.post('/register', register);
+
+export default authRouter;

@@ -15,6 +15,7 @@ const envSchema = z.object({
   RAZORPAY_KEY_ID: z.string(),
   RAZORPAY_KEY_SECRET: z.string(),
   RAZORPAY_WEBHOOK_SECRET: z.string(),
+  USER_DASHBOARD_APP: z.string(),
 });
 
 const config = {

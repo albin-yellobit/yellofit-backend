@@ -4,8 +4,22 @@ import logger from "./logger";
 
 export const connectDB = async(): Promise<void> =>{
     try {
-        const conn = await mongoose.connect(config.env.MONGO_URI);
+        const mongoUri = config.env.MONGO_URI;
+        // Check if URI already contains a database name
+        const uriWithDB = mongoUri.includes('/?') 
+            ? mongoUri.replace('/?', '/yellofit?')
+            : mongoUri.includes('?')
+            ? mongoUri.replace('?', '/yellofit?')
+            : mongoUri.endsWith('/')
+            ? `${mongoUri}yellofit`
+            : `${mongoUri}/yellofit`;
+
+        const conn = await mongoose.connect(uriWithDB);
         logger.info(`MongoDB Connected: ${conn.connection.host}`);
+
+        if (conn.connection.db) {
+            logger.info(`Using database: ${conn.connection.db.databaseName}`);
+        }    
         
         mongoose.connection.on('error', (err) => {
         logger.error('MongoDB connection error:', err);

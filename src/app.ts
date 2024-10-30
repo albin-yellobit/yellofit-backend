@@ -18,9 +18,19 @@ const app:Application = express();
 // Connect to database
 connectDB();
 
+const corsOptions = {
+  origin: config.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3000'  // Specify the exact origin in development
+    : config.env.USER_DASHBOARD_APP,  // Set specific origin for production
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,  // Allow credentials to be included in requests
+};
+
+
 // security middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(compression());
 

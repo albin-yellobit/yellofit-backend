@@ -1,4 +1,5 @@
 import { Orders } from "razorpay/dist/types/orders";
+import { Request } from "express";
 
 // Configuration types
 export interface RazorpayConfig {
@@ -64,5 +65,19 @@ export interface PaymentResponse {
     key: string;
   };
   error?: string;
+}
+
+export interface CreatePaymentRequestType extends Request {
+  body: CreatePaymentRequest;
+}
+
+export interface PaymentVerificationRequestType extends Request {
+  body: PaymentVerificationParams;
+}
+
+export interface UserPaymentHistoryRequestType extends Request {
+  params: {
+      userId: string;
+  };
 }
 
