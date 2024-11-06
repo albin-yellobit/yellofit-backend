@@ -9,7 +9,7 @@ const otpSchema = new Schema<IOTP>({
     },
     otp: {
       type: String,
-      required: true
+      required: false
     },
     verified: {
       type: Boolean,
@@ -17,13 +17,13 @@ const otpSchema = new Schema<IOTP>({
     },
     expiresAt: {
       type: Date,
-      required: true
+      required: false
     }
 }, {
     timestamps: true
 });
 
-otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+// otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export const OTP = mongoose.model<IOTP>('OTP', otpSchema);
   

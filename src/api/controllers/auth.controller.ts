@@ -4,6 +4,7 @@ import { ApiError } from '@/utils/ApiError';
 import { OTPService } from '@/services/otp.service';
 import logger from '@/config/logger';
 import { OTP } from '../models/otp.modal';
+import { PhoneAuthService } from '@/services/phoneAuth.service';
 
 export const sendOTP = async (
     req: Request,
@@ -54,6 +55,64 @@ export const verifyOTP = async (
     }
 }
 
+export const initializePhoneAuth = async  (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { phone, action = 'register' } = req.body;
+        if(!phone){
+            throw new ApiError(400, 'Phone number is required.');
+        }
+
+        if(action === 'register'){
+            await PhoneAuthService.validatePhoneForRegistration(phone);
+        } else if(action === 'login'){
+            await PhoneAuthService.validatePhoneForLogin(phone);
+        } else {
+            throw new ApiError(400, 'Invalid action type');
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Phone validation successful. Proceed with authentication.",
+            data: { phone }
+        });
+    } catch (error) {
+        logger.error(`Error in phone validation:`, error);
+        next(error);
+    }
+}
+
+export const completePhoneAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { phone, firebaseUid } = req.body;
+
+        if (!phone || !firebaseUid) {
+            throw new ApiError(400, 'Missing required fields');
+        }
+
+        const isVerified = await PhoneAuthService.completePhoneVerification(phone, firebaseUid);
+
+        if (!isVerified) {
+            throw new ApiError(500, 'Failed to complete phone verification');
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Phone verification completed successfully."
+        });
+    } catch (error) {
+        logger.error(`Error in completing phone verification:`, error);
+        next(error);
+    }
+};
+
 export const register = async (
     req:Request, 
     res:Response,
@@ -101,7 +160,7 @@ export const register = async (
             data: {
                 user: {
                     id: user._id,
-                    name: user.name,
+                    name: user.firstName,
                     email: user.email,
                     phone: user.phone,
                     emailVerified: user.emailVerified,

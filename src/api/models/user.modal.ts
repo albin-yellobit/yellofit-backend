@@ -2,7 +2,11 @@ import { IUser } from "@/types/user";
 import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema<IUser>({
-    name: {
+    firstName: {
+        type: String,
+        trim: true
+    },
+    lastName: {
         type: String,
         trim: true
     },
@@ -27,6 +31,10 @@ const userSchema = new Schema<IUser>({
         type: String,
         trim: true
     },
+    country: {
+        type: String,
+        trim: true
+    },
     city: {
         type: String,
         trim: true
@@ -35,6 +43,9 @@ const userSchema = new Schema<IUser>({
         type: String,
         enum: ['male', 'female', 'other']
     },
+    firebaseUid: {
+        type: String,
+    },
     phoneVerified: {
         type: Boolean,
         default: false
@@ -42,6 +53,10 @@ const userSchema = new Schema<IUser>({
     emailVerified: {
         type: Boolean,
         default: false
+    },
+    lastVerifiedAt: {
+        type: Date,
+        default: null
     },
     deletedAt: {
         type: Date,
